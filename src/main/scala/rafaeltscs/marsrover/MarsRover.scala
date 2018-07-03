@@ -1,6 +1,6 @@
 package rafaeltscs.marsrover
 
-object Main {
+object MarsRover {
   def main(args: Array[String]): Unit = {
 
   }
