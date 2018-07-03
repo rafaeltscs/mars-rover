@@ -13,4 +13,5 @@ object Commander {
     lazy val TURN_ROVER_LEFT: Char = 'L'
     lazy val TURN_ROVER_RIGHT: Char = 'R'
   }
+
 }
