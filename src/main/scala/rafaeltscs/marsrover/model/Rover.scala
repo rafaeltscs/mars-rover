@@ -7,9 +7,9 @@ case class Rover(name: String, position: Position, plateau: Plateau) {
 
   def move(command: Char): Rover = {
     command match {
-      case Commander.COMMANDS.MOVE_ROVER => moveForward
-      case Commander.COMMANDS.TURN_ROVER_LEFT => turnLeft
-      case Commander.COMMANDS.TURN_ROVER_RIGHT => turnRight
+      case Commander.Commands.MOVE_ROVER => moveForward
+      case Commander.Commands.TURN_ROVER_LEFT => turnLeft
+      case Commander.Commands.TURN_ROVER_RIGHT => turnRight
     }
   }
 
