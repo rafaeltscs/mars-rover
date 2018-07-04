@@ -1,24 +1,26 @@
 package rafaeltscs.marsrover.model
 
+import rafaeltscs.marsrover.types.Types
 import rafaeltscs.marsrover.types.Types.Direction
+import rafaeltscs.marsrover.types.Types.DirectionExtension
 
 case class Position(x: Int, y: Int, direction: Direction) {
 
   def moveForward: Position = {
     direction match {
-      case Position.DIRECTION.NORTH => moveNorth
-      case Position.DIRECTION.EAST => moveEast
-      case Position.DIRECTION.SOUTH => moveSouth
-      case Position.DIRECTION.WEST => moveWest
+      case Types.Direction.NORTH => moveNorth
+      case Types.Direction.EAST => moveEast
+      case Types.Direction.SOUTH => moveSouth
+      case Types.Direction.WEST => moveWest
     }
   }
 
   def rotateLeft : Position = {
-    copy(direction = Integer.rotateLeft(direction.intValue(),8))
+    copy(direction = direction.rotateLeft)
   }
 
   def rotateRight : Position = {
-    copy(direction = Integer.rotateRight(direction.intValue(),8))
+    copy(direction = direction.rotateRight)
   }
 
   private def moveNorth: Position = {
@@ -30,20 +32,13 @@ case class Position(x: Int, y: Int, direction: Direction) {
   }
 
   private def moveEast: Position = {
-    copy(y = x+1)
+    copy(x = x+1)
   }
 
   private def moveWest: Position = {
-    copy(y = x-1)
+    copy(x = x-1)
   }
 
-}
+  override def toString: String = s"$x $y ${direction.getChar}"
 
-object Position {
-  object DIRECTION {
-    val NORTH: Direction = 1         // 1
-    val EAST: Direction  = 256       // 100000000
-    val SOUTH: Direction = 65536     // 10000000000000000
-    val WEST: Direction  = 16777216  // 1000000000000000000000000
-  }
 }

@@ -4,7 +4,6 @@ import rafaeltscs.marsrover.controller.PlateauController
 import rafaeltscs.marsrover.exception.PlateauAlreadyDefinedException
 import rafaeltscs.marsrover.model.{Plateau, Position, Rover}
 
-import scala.collection.mutable.ArrayBuffer
 import scala.util.matching.Regex
 
 /**
@@ -14,7 +13,6 @@ object Commander {
 
 //  private val COMMAND_PATTERN: Regex = "([aA-zZ]|[0-9])+ *([aA-zZ]|[0-9])*".r
   private var plateauController: Option[PlateauController] = None
-  private val rovers: ArrayBuffer[Rover] = ArrayBuffer[Rover]()
 
   object Commands {
     val PLATEAU_PATTERN: Regex = "^Plateau:([0-9]+) ([0-9]+$)".r
@@ -71,7 +69,4 @@ object Commander {
     plateauController = Option(PlateauController(Plateau(width,height)))
   }
 
-  private def landRover(name: String, position: Position) = {
-
-  }
 }
