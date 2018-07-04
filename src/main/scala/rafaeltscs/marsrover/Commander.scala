@@ -1,14 +1,22 @@
 package rafaeltscs.marsrover
 
+import rafaeltscs.marsrover.controller.PlateauController
+import rafaeltscs.marsrover.exception.PlateauAlreadyDefinedException
+import rafaeltscs.marsrover.model.Plateau
+
 import scala.collection.mutable.ArrayBuffer
+import scala.util.matching.Regex
 
 /**
   * Singleon object that controls the rovers and the plateau.
   */
 object Commander {
 
+  private val COMMAND_PATTERN: Regex = "([aA-zZ]|[0-9])+ *([aA-zZ]|[0-9])*".r
+  private var plateauController: Option[PlateauController] = None
+
   object COMMANDS {
-    val PLATEAU: String = "Plateau"
+    val PLATEAU_PATTERN: Regex = "Plateau:[0-9]+ [0-9]+$".r
     val LANDING: String = "Landing"
     val INSTRUCTIONS: String = "Instructions"
     val MOVE_ROVER: Char = 'M'
@@ -33,6 +41,19 @@ object Commander {
     if(commands.isEmpty){
       println("No instructions provided. Shutting down the system...")
     }
-    commands.foreach(println)
+
+    //TODO: fix
+    commands.foreach { instrution =>
+      instrution match {
+        case COMMANDS.PLATEAU_PATTERN => println("plateau")
+        //        val coordinates = c.split(":")(1).split(" ").map(_.toInt)
+        //        initPlateauController(coordinates(0),coordinates(1))
+      }
+    }
+  }
+
+  private def initPlateauController(width: Int, height: Int): Unit = {
+    plateauController.foreach(throw PlateauAlreadyDefinedException("A plateau has already been set."))
+    plateauController = Option(PlateauController(Plateau(width,height)))
   }
 }
