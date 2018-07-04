@@ -16,7 +16,7 @@ object Commander {
   private var plateauController: Option[PlateauController] = None
 
   object COMMANDS {
-    val PLATEAU_PATTERN: Regex = "Plateau:[0-9]+ [0-9]+$".r
+    val PLATEAU_PATTERN = "^Plateau:([0-9]+) ([0-9]+$)".r
     val LANDING: String = "Landing"
     val INSTRUCTIONS: String = "Instructions"
     val MOVE_ROVER: Char = 'M'
@@ -25,35 +25,31 @@ object Commander {
     val PROCEED: String = ""
   }
 
-  def command(order: => String, instructions : ArrayBuffer[String] = ArrayBuffer[String]()) {
+  def command(order: => String, instructions : Seq[String] = Seq[String]()) {
     println("Waiting for Instructions. Press ENTER to proceed.")
+    instructions.foreach(println)
     order match {
       case COMMANDS.PROCEED =>
         processCommands(instructions)
         println("finished.")
       case str: String =>
-        instructions.+=(str)
-        command(order,instructions)
+        command(order,instructions.:+(str))
     }
   }
 
-  def processCommands(commands: ArrayBuffer[String]): Unit = {
+  def processCommands(commands: Seq[String]): Unit = {
     if(commands.isEmpty){
       println("No instructions provided. Shutting down the system...")
     }
 
-    //TODO: fix
-    commands.foreach { instrution =>
-      instrution match {
-        case COMMANDS.PLATEAU_PATTERN => println("plateau")
-        //        val coordinates = c.split(":")(1).split(" ").map(_.toInt)
-        //        initPlateauController(coordinates(0),coordinates(1))
-      }
+    commands.foreach  {
+      case COMMANDS.PLATEAU_PATTERN(x,y) => println("plateau")
+        initPlateauController(x.toInt,y.toInt)
     }
   }
 
   private def initPlateauController(width: Int, height: Int): Unit = {
-    plateauController.foreach(throw PlateauAlreadyDefinedException("A plateau has already been set."))
+    plateauController.foreach( _ => throw PlateauAlreadyDefinedException("A plateau has already been set."))
     plateauController = Option(PlateauController(Plateau(width,height)))
   }
 }
