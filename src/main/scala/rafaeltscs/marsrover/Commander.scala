@@ -17,8 +17,8 @@ object Commander {
   object Commands {
     object Patterns {
       val PLATEAU: Regex = "^Plateau:([0-9]+) ([0-9]+$)".r
-      val LANDING: Regex = "(^Rover1) (Landing):(1) (2) (N$)".r
-      val INSTRUCTIONS: Regex = "Instructions".r
+      val LANDING: Regex = "^(\\w+) Landing:([0-9]+) ([0-9]+) ([NSEW]$)".r
+      val INSTRUCTIONS: Regex = "^(\\w+) Instructions:([MLR]+$)".r
     }
 
     val MOVE_ROVER: Char = 'M'
@@ -30,12 +30,10 @@ object Commander {
       Patterns.PLATEAU.findFirstIn(command).isDefined
     }
 
-    def isLandingCommand(command: String): Boolean = {
-      Patterns.LANDING.findFirstIn(command).isDefined
-    }
   }
 
-  def command(order: => String, instructions : Seq[String] = Seq[String]()) {
+  def readCommands(orderFunction: => String, instructions : Seq[String] = Seq[String]()):  Seq[String] = {
+
     if(instructions.nonEmpty) {
       println(
         s"""
@@ -45,25 +43,46 @@ object Commander {
       )
     }
 
-    print("Type an instruction or press ENTER to proceed: ")
-    order match {
-      case Commands.PROCEED =>
-        processCommands(instructions)
-        println("finished.")
-      case commandStr: String =>
-        var validCommand = true
+    print("Insert a new instruction or press ENTER to proceed: ")
+    val order = orderFunction.trim
 
-        if (instructions.exists(_ => Commands.isPlateauCommand(commandStr))) {
-          println(s"A plateau has already been set. Instruction '$commandStr' will be ignored.")
+    if (order.isEmpty) {
+      instructions
+    } else {
+      var validCommand = true
+
+      order match {
+        case Commands.Patterns.PLATEAU(x,y) =>
+          if (instructions.nonEmpty) {
+            println(s"A plateau has already been set. Instruction '$order' will be ignored.")
+            validCommand = false
+          }
+        case Commands.Patterns.LANDING(roverName, x, y, direction) =>
+          if(instructions.isEmpty){
+            println(s"You need a Plateau in order to land a Rover. Instruction '$order' will be ignored.")
+            validCommand = false
+          } else if (instructions.exists(_.startsWith(roverName))) {
+            println(s"There is already a instruction for landing a rover with the name '$roverName'. Instruction '$order' will be ignored.")
+            validCommand = false
+          }
+        case Commands.Patterns.INSTRUCTIONS(roverName, cmdInstructions) =>
+          if(instructions.isEmpty){
+            println(s"You need a Plateau in order to move a Rover. Instruction '$order' will be ignored.")
+            validCommand = false
+          } else if (!instructions.exists(_.startsWith(roverName))) {
+            println(s"There is no instruction for landing a rover with the name '$roverName'. Instruction '$order' will be ignored.")
+            validCommand = false
+          }
+        case _ =>
+          println("Invalid instruction.")
           validCommand = false
-        }
-//        else if(Commands.Patterns.LANDING.findFirstIn(commandStr).map(_.split(" ")(0)).) {
-//          TODO: continue
-//        }
+      }
 
-        if (validCommand) command(order, instructions.:+(commandStr))
-        else command(order, instructions)
+      if (validCommand) readCommands(orderFunction, instructions.:+(order))
+      else readCommands(orderFunction, instructions)
     }
+
+
   }
 
   def processCommands(commands: Seq[String]): Unit = {
@@ -75,6 +94,12 @@ object Commander {
       case Commands.Patterns.PLATEAU(x,y) => println("plateau")
         initPlateauController(x.toInt,y.toInt)
     }
+  }
+
+  def report: String = {
+    maybeTrafficController.map{ controller =>
+      controller.report
+    }.getOrElse("There are no rovers landed.")
   }
 
   private def initPlateauController(width: Int, height: Int): Unit = {

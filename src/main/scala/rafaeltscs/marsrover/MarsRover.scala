@@ -8,6 +8,9 @@ object MarsRover {
   def main(args: Array[String]): Unit = {
     println(s"Starting ${BuildInfo.name} - v${BuildInfo.version}")
 
-    Commander.command(StdIn.readLine())
+    val instructions = Commander.readCommands(StdIn.readLine())
+    Commander.processCommands(instructions)
+
+    println(Commander.report)
   }
 }

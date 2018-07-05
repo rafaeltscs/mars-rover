@@ -13,6 +13,10 @@ case class Rover(name: String, position: Position, plateau: Plateau) {
     }
   }
 
+  override def toString: String = {
+    s"$name:$position"
+  }
+
   private def moveForward: Rover = {
     copy(position = position.moveForward)
   }

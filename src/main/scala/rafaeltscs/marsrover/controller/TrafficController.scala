@@ -14,6 +14,10 @@ case class TrafficController(plateau: Plateau, rovers: ArrayBuffer[Rover] = Arra
     rovers.+=(Rover(name,position,plateau))
   }
 
+  def report: String = {
+    rovers.mkString("\n")
+  }
+
   private def validatingMove[T](position: Position)(f: => T): T = {
     plateau.validatesPosition(position)
 
