@@ -1,6 +1,6 @@
 package rafaeltscs.marsrover
 
-import rafaeltscs.marsrover.controller.PlateauController
+import rafaeltscs.marsrover.controller.TrafficController
 import rafaeltscs.marsrover.exception.PlateauAlreadyDefinedException
 import rafaeltscs.marsrover.model.{Plateau, Position, Rover}
 
@@ -12,19 +12,26 @@ import scala.util.matching.Regex
 object Commander {
 
 //  private val COMMAND_PATTERN: Regex = "([aA-zZ]|[0-9])+ *([aA-zZ]|[0-9])*".r
-  private var plateauController: Option[PlateauController] = None
+  private var maybeTrafficController: Option[TrafficController] = None
 
   object Commands {
-    val PLATEAU_PATTERN: Regex = "^Plateau:([0-9]+) ([0-9]+$)".r
-    val LANDING: String = "Landing"
-    val INSTRUCTIONS: String = "Instructions"
+    object Patterns {
+      val PLATEAU: Regex = "^Plateau:([0-9]+) ([0-9]+$)".r
+      val LANDING: Regex = "(^Rover1) (Landing):(1) (2) (N$)".r
+      val INSTRUCTIONS: Regex = "Instructions".r
+    }
+
     val MOVE_ROVER: Char = 'M'
     val TURN_ROVER_LEFT: Char = 'L'
     val TURN_ROVER_RIGHT: Char = 'R'
     val PROCEED: String = ""
 
     def isPlateauCommand(command: String): Boolean = {
-      PLATEAU_PATTERN.findFirstIn(command).isDefined
+      Patterns.PLATEAU.findFirstIn(command).isDefined
+    }
+
+    def isLandingCommand(command: String): Boolean = {
+      Patterns.LANDING.findFirstIn(command).isDefined
     }
   }
 
@@ -43,13 +50,19 @@ object Commander {
       case Commands.PROCEED =>
         processCommands(instructions)
         println("finished.")
-      case str: String =>
-        if(instructions.exists(_ => Commands.isPlateauCommand(str))) {
-          println(s"A plateau has already been set. Instruction '$str' will be ignored.")
-          command(order, instructions)
-        } else {
-          command(order, instructions.:+(str))
+      case commandStr: String =>
+        var validCommand = true
+
+        if (instructions.exists(_ => Commands.isPlateauCommand(commandStr))) {
+          println(s"A plateau has already been set. Instruction '$commandStr' will be ignored.")
+          validCommand = false
         }
+//        else if(Commands.Patterns.LANDING.findFirstIn(commandStr).map(_.split(" ")(0)).) {
+//          TODO: continue
+//        }
+
+        if (validCommand) command(order, instructions.:+(commandStr))
+        else command(order, instructions)
     }
   }
 
@@ -59,14 +72,14 @@ object Commander {
     }
 
     commands.foreach  {
-      case Commands.PLATEAU_PATTERN(x,y) => println("plateau")
+      case Commands.Patterns.PLATEAU(x,y) => println("plateau")
         initPlateauController(x.toInt,y.toInt)
     }
   }
 
   private def initPlateauController(width: Int, height: Int): Unit = {
-    plateauController.foreach( _ => throw PlateauAlreadyDefinedException("A plateau has already been set."))
-    plateauController = Option(PlateauController(Plateau(width,height)))
+    maybeTrafficController.foreach( _ => throw PlateauAlreadyDefinedException("A plateau has already been set."))
+    maybeTrafficController = Option( TrafficController(Plateau(width,height)) )
   }
 
 }

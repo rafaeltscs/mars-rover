@@ -14,10 +14,7 @@ case class Rover(name: String, position: Position, plateau: Plateau) {
   }
 
   private def moveForward: Rover = {
-    val newPosition = position.moveForward
-    plateau.validatesPosition(newPosition)
-
-    copy(position = newPosition)
+    copy(position = position.moveForward)
   }
 
   private def turnLeft: Rover = {

@@ -23,6 +23,10 @@ case class Position(x: Int, y: Int, direction: Direction) {
     copy(direction = direction.rotateRight)
   }
 
+  def same(position: Position): Boolean = {
+    x == position.x && y == position.y
+  }
+
   private def moveNorth: Position = {
     copy(y = y+1)
   }
