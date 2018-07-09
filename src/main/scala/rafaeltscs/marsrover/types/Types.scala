@@ -34,8 +34,17 @@ object Types {
 
   object Direction {
     val NORTH: Direction = 1         // 1
-    val EAST: Direction  = 256       // 100000000
+    val WEST: Direction  = 256       // 100000000
     val SOUTH: Direction = 65536     // 10000000000000000
-    val WEST: Direction  = 16777216  // 1000000000000000000000000
+    val EAST: Direction  = 16777216  // 1000000000000000000000000
+
+    def fromChar(char: Char): Direction = {
+      char match {
+        case 'N' => NORTH
+        case 'E' => EAST
+        case 'S' => SOUTH
+        case 'W' => WEST
+      }
+    }
   }
 }

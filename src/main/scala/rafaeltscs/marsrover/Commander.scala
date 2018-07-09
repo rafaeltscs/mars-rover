@@ -3,6 +3,7 @@ package rafaeltscs.marsrover
 import rafaeltscs.marsrover.controller.TrafficController
 import rafaeltscs.marsrover.exception.PlateauAlreadyDefinedException
 import rafaeltscs.marsrover.model.{Plateau, Position, Rover}
+import rafaeltscs.marsrover.types.Types.Direction
 
 import scala.util.matching.Regex
 
@@ -90,9 +91,17 @@ object Commander {
       println("No instructions provided. Shutting down the system...")
     }
 
-    commands.foreach  {
-      case Commands.Patterns.PLATEAU(x,y) => println("plateau")
-        initPlateauController(x.toInt,y.toInt)
+    commands.foreach {
+      case Commands.Patterns.PLATEAU(x, y) =>
+        initPlateauController(x.toInt, y.toInt)
+      case Commands.Patterns.LANDING(roverName, x, y, direction) =>
+        maybeTrafficController.foreach { controller =>
+          controller.landRover(roverName, Position(x.toInt, y.toInt, Direction.fromChar(direction.charAt(0))))
+        }
+      case Commands.Patterns.INSTRUCTIONS(roverName, cmdInstructions) =>
+        maybeTrafficController.foreach { controller =>
+          controller.moveRover(roverName,cmdInstructions)
+        }
     }
   }
 
@@ -102,9 +111,10 @@ object Commander {
     }.getOrElse("There are no rovers landed.")
   }
 
-  private def initPlateauController(width: Int, height: Int): Unit = {
+  private def initPlateauController(upperX: Int, upperYt: Int): Unit = {
     maybeTrafficController.foreach( _ => throw PlateauAlreadyDefinedException("A plateau has already been set."))
-    maybeTrafficController = Option( TrafficController(Plateau(width,height)) )
+    implicit val plateau = Plateau(upperX + 1, upperYt + 1)
+    maybeTrafficController = Option( TrafficController() )
   }
 
 }
