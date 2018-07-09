@@ -111,9 +111,9 @@ object Commander {
     }.getOrElse("There are no rovers landed.")
   }
 
-  private def initPlateauController(width: Int, height: Int): Unit = {
+  private def initPlateauController(upperX: Int, upperYt: Int): Unit = {
     maybeTrafficController.foreach( _ => throw PlateauAlreadyDefinedException("A plateau has already been set."))
-    implicit val plateau = Plateau(width,height)
+    implicit val plateau = Plateau(upperX + 1, upperYt + 1)
     maybeTrafficController = Option( TrafficController() )
   }
 

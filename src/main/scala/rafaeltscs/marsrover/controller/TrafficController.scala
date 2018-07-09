@@ -11,9 +11,13 @@ case class TrafficController(implicit plateau: Plateau, rovers: ArrayBuffer[Rove
     val rover: Rover = rovers.find(_.name == name)
                               .getOrElse(throw NoRoverException(s"No rover was found with the name $name"))
 
-    instructions.foreach{ i =>
-      rovers.diff(Array(rover)).+:(rover.move(i))
+    instructions.foldLeft[Rover](rover){ (r,i) =>
+      val resultRover: Rover = r.move(i)
+      rovers -= r
+      rovers += resultRover
+      resultRover
     }
+
   }
 
   def landRover(name: String, position: Position): Unit = validateLanging(position) {
