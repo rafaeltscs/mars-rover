@@ -113,7 +113,8 @@ object Commander {
 
   private def initPlateauController(width: Int, height: Int): Unit = {
     maybeTrafficController.foreach( _ => throw PlateauAlreadyDefinedException("A plateau has already been set."))
-    maybeTrafficController = Option( TrafficController(Plateau(width,height)) )
+    implicit val plateau = Plateau(width,height)
+    maybeTrafficController = Option( TrafficController() )
   }
 
 }
