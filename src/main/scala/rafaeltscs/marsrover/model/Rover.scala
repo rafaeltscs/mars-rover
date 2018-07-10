@@ -1,7 +1,7 @@
 package rafaeltscs.marsrover.model
 
-import rafaeltscs.marsrover.Commander
 import rafaeltscs.marsrover.exception.InvalidPositionException
+import rafaeltscs.marsrover.types.Types.Command
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -10,9 +10,9 @@ case class Rover(name: String, position: Position)(implicit plateau: Plateau) {
 
   def move(command: Char)(implicit rovers: ArrayBuffer[Rover]): Rover = {
     command match {
-      case Commander.Commands.MOVE_ROVER => validating(moveForward)
-      case Commander.Commands.TURN_ROVER_LEFT => turnLeft
-      case Commander.Commands.TURN_ROVER_RIGHT => turnRight
+      case Command.Instructions.MOVE_ROVER => validating(moveForward)
+      case Command.Instructions.TURN_ROVER_LEFT => turnLeft
+      case Command.Instructions.TURN_ROVER_RIGHT => turnRight
     }
   }
 

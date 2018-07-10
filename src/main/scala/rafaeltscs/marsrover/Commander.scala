@@ -2,10 +2,9 @@ package rafaeltscs.marsrover
 
 import rafaeltscs.marsrover.controller.TrafficController
 import rafaeltscs.marsrover.exception.PlateauAlreadyDefinedException
-import rafaeltscs.marsrover.model.{Plateau, Position, Rover}
-import rafaeltscs.marsrover.types.Types.Direction
+import rafaeltscs.marsrover.model.{Plateau, Position}
+import rafaeltscs.marsrover.types.Types.{Command, Direction}
 
-import scala.util.matching.Regex
 
 /**
   * Singleton object that controls the rovers and the plateau.
@@ -15,25 +14,7 @@ object Commander {
 //  private val COMMAND_PATTERN: Regex = "([aA-zZ]|[0-9])+ *([aA-zZ]|[0-9])*".r
   private var maybeTrafficController: Option[TrafficController] = None
 
-  object Commands {
-    object Patterns {
-      val PLATEAU: Regex = "^Plateau:([0-9]+) ([0-9]+$)".r
-      val LANDING: Regex = "^(\\w+) Landing:([0-9]+) ([0-9]+) ([NSEW]$)".r
-      val INSTRUCTIONS: Regex = "^(\\w+) Instructions:([MLR]+$)".r
-    }
-
-    val MOVE_ROVER: Char = 'M'
-    val TURN_ROVER_LEFT: Char = 'L'
-    val TURN_ROVER_RIGHT: Char = 'R'
-    val PROCEED: String = ""
-
-    def isPlateauCommand(command: String): Boolean = {
-      Patterns.PLATEAU.findFirstIn(command).isDefined
-    }
-
-  }
-
-  def readCommands(orderFunction: => String, instructions : Seq[String] = Seq[String]()):  Seq[String] = {
+  def readCommands(orderFunction: => Command, instructions : Seq[Command] = Seq[Command]()):  Seq[Command] = {
 
     if(instructions.nonEmpty) {
       println(
@@ -45,33 +26,32 @@ object Commander {
     }
 
     print("Insert a new instruction or press ENTER to proceed: ")
-    val order = orderFunction.trim
+    val command: Command = orderFunction.trim
 
-    if (order.isEmpty) {
+    if (command.isEmpty) {
       instructions
     } else {
       var validCommand = true
-
-      order match {
-        case Commands.Patterns.PLATEAU(x,y) =>
+      command match {
+        case Command.Patterns.PLATEAU(x,y) =>
           if (instructions.nonEmpty) {
-            println(s"A plateau has already been set. Instruction '$order' will be ignored.")
+            println(s"A plateau has already been set. Instruction '$command' will be ignored.")
             validCommand = false
           }
-        case Commands.Patterns.LANDING(roverName, x, y, direction) =>
+        case Command.Patterns.LANDING(roverName, x, y, direction) =>
           if(instructions.isEmpty){
-            println(s"You need a Plateau in order to land a Rover. Instruction '$order' will be ignored.")
+            println(s"You need a Plateau in order to land a Rover. Instruction '$command' will be ignored.")
             validCommand = false
           } else if (instructions.exists(_.startsWith(roverName))) {
-            println(s"There is already a instruction for landing a rover with the name '$roverName'. Instruction '$order' will be ignored.")
+            println(s"There is already a instruction for landing a rover with the name '$roverName'. Instruction '$command' will be ignored.")
             validCommand = false
           }
-        case Commands.Patterns.INSTRUCTIONS(roverName, cmdInstructions) =>
+        case Command.Patterns.INSTRUCTIONS(roverName, cmdInstructions) =>
           if(instructions.isEmpty){
-            println(s"You need a Plateau in order to move a Rover. Instruction '$order' will be ignored.")
+            println(s"You need a Plateau in order to move a Rover. Instruction '$command' will be ignored.")
             validCommand = false
           } else if (!instructions.exists(_.startsWith(roverName))) {
-            println(s"There is no instruction for landing a rover with the name '$roverName'. Instruction '$order' will be ignored.")
+            println(s"There is no instruction for landing a rover with the name '$roverName'. Instruction '$command' will be ignored.")
             validCommand = false
           }
         case _ =>
@@ -79,26 +59,26 @@ object Commander {
           validCommand = false
       }
 
-      if (validCommand) readCommands(orderFunction, instructions.:+(order))
+      if (validCommand) readCommands(orderFunction, instructions.:+(command))
       else readCommands(orderFunction, instructions)
     }
 
 
   }
 
-  def processCommands(commands: Seq[String]): Unit = {
+  def processCommands(commands: Seq[Command]): Unit = {
     if(commands.isEmpty){
       println("No instructions provided. Shutting down the system...")
     }
 
     commands.foreach {
-      case Commands.Patterns.PLATEAU(x, y) =>
+      case Command.Patterns.PLATEAU(x, y) =>
         initPlateauController(x.toInt, y.toInt)
-      case Commands.Patterns.LANDING(roverName, x, y, direction) =>
+      case Command.Patterns.LANDING(roverName, x, y, direction) =>
         maybeTrafficController.foreach { controller =>
           controller.landRover(roverName, Position(x.toInt, y.toInt, Direction.fromChar(direction.charAt(0))))
         }
-      case Commands.Patterns.INSTRUCTIONS(roverName, cmdInstructions) =>
+      case Command.Patterns.INSTRUCTIONS(roverName, cmdInstructions) =>
         maybeTrafficController.foreach { controller =>
           controller.moveRover(roverName,cmdInstructions)
         }
