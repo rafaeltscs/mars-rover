@@ -5,6 +5,8 @@ import rafaeltscs.marsrover.exception.PlateauAlreadyDefinedException
 import rafaeltscs.marsrover.model.{Plateau, Position}
 import rafaeltscs.marsrover.types.Types.{Command, Direction}
 
+import scala.util.{Failure, Try}
+
 
 /**
   * Singleton object that controls the rovers and the plateau.
@@ -66,7 +68,7 @@ object Commander {
 
   }
 
-  def processCommands(commands: Seq[Command]): Unit = {
+  def processCommands(commands: Seq[Command])= {
     if(commands.isEmpty){
       println("No instructions provided. Shutting down the system...")
     }
@@ -75,14 +77,15 @@ object Commander {
       case Command.Patterns.PLATEAU(x, y) =>
         initPlateauController(x.toInt, y.toInt)
       case Command.Patterns.LANDING(roverName, x, y, direction) =>
-        maybeTrafficController.foreach { controller =>
+        maybeTrafficController.map { controller =>
           controller.landRover(roverName, Position(x.toInt, y.toInt, Direction.fromChar(direction.charAt(0))))
         }
       case Command.Patterns.INSTRUCTIONS(roverName, cmdInstructions) =>
-        maybeTrafficController.foreach { controller =>
-          controller.moveRover(roverName,cmdInstructions)
+        maybeTrafficController.map { controller =>
+          controller.moveRover(roverName, cmdInstructions)
         }
     }
+
   }
 
   def report: String = {

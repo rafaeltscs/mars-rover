@@ -40,7 +40,7 @@ case class Rover(name: String, position: Position)(implicit plateau: Plateau) {
     plateau.validatePosition(resultPosition)
 
     if(rovers.exists(_.position.same(resultPosition)))
-      throw InvalidPositionException(s"The position (${resultPosition.toString}) is occupied.")
+      throw InvalidPositionException(s"The position (${resultPosition.toString}) is occupied. Stopped at (${position.toString})")
 
     result
   }
