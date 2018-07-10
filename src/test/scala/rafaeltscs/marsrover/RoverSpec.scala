@@ -18,7 +18,7 @@ class RoverSpec extends Specification with RoversController {
       rover.move('L').toString must beEqualTo("roverTest:3 3 W")
     }
 
-    "turn RIGTH and face EAST'" >> {
+    "turn RIGHT and face EAST'" >> {
       rover.move('R').toString must beEqualTo("roverTest:3 3 E")
     }
 
@@ -34,7 +34,7 @@ class RoverSpec extends Specification with RoversController {
       rover.move('L').toString must beEqualTo("roverTest:3 3 N")
     }
 
-    "turn RIGTH and face SOUTH'" >> {
+    "turn RIGHT and face SOUTH'" >> {
       rover.move('R').toString must beEqualTo("roverTest:3 3 S")
     }
 
@@ -50,7 +50,7 @@ class RoverSpec extends Specification with RoversController {
       rover.move('L').toString must beEqualTo("roverTest:3 3 E")
     }
 
-    "turn RIGTH and face WEST'" >> {
+    "turn RIGHT and face WEST'" >> {
       rover.move('R').toString must beEqualTo("roverTest:3 3 W")
     }
 
@@ -66,7 +66,7 @@ class RoverSpec extends Specification with RoversController {
       rover.move('L').toString must beEqualTo("roverTest:3 3 S")
     }
 
-    "turn RIGTH and face NORTH'" >> {
+    "turn RIGHT and face NORTH'" >> {
       rover.move('R').toString must beEqualTo("roverTest:3 3 N")
     }
 
