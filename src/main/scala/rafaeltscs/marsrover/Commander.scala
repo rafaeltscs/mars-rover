@@ -69,6 +69,7 @@ object Commander {
   }
 
   def processCommands(commands: Seq[Command])= {
+    println("Executing instructions...")
     if(commands.isEmpty){
       println("No instructions provided. Shutting down the system...")
     }
