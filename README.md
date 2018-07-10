@@ -11,6 +11,7 @@ This is a solution to the problem described in (https://github.com/abdulg/Mars-R
 
 To run the application, do the following:
 * Clone this repository;
+* Open a terminal/prompt window;
 * Move into the repository folder;
 * Run the command: `sbt run` for executing the application **or**;
 * Run the command: `sbt test` for executing the tests **or**;
